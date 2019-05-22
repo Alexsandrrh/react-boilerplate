@@ -306,7 +306,7 @@ csx/
 ecf/
 rcf/
 
-# Windows Store app package directories and files
+# Windows Store appReducer package directories and files
 AppPackages/
 BundleArtifacts/
 Package.StoreAssociation.xml
@@ -682,3 +682,6 @@ GitHub.sublime-settings
 !.vscode/launch.json
 !.vscode/extensions.json
 
+dist
+package-lock.json
+yarn-error.log
