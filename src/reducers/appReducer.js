@@ -1,13 +1,8 @@
 export function app(
   state = {
-    name: 'App React',
-    lang: 'en',
-    updateAt: Date.now()
+    name: 'App React'
   },
   action
 ) {
-  switch (action.type) {
-    default:
-      return state;
-  }
+  return state;
 }

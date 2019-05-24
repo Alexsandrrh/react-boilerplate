@@ -9,9 +9,6 @@ import './assets/scss/main.scss';
 
 const store = createStore(rootStore, applyMiddleware(thunk));
 
-// eslint-disable-next-line
-console.log(store.getState());
-
 render(
   <Provider store={store}>
     <App />

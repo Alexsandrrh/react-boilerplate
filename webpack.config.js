@@ -12,12 +12,18 @@ const { argv } = require('yargs');
 const isDevelopment = argv.development;
 const isProduction = argv.production;
 
+let entryFile = {
+  app: path.resolve(__dirname, './src/index.js')
+};
+
+if (isDevelopment) {
+  entryFile['devtool'] = 'react-hot-loader/patch';
+}
+
 module.exports = {
   mode: isDevelopment ? 'development' : 'production',
   devtool: 'eval',
-  entry: {
-    app: path.resolve(__dirname, './src/index.js')
-  },
+  entry: entryFile,
   performance: { hints: false },
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -28,9 +34,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        }
+        loaders: ['react-hot-loader/webpack', 'babel-loader']
       },
       {
         test: /\.svg$/,
@@ -107,7 +111,10 @@ module.exports = {
       }
     ]
   },
-  resolve: { extensions: ['.js', '.jsx', '.sass', '.scss', '.css', '.json'] },
+  resolve: {
+    extensions: ['.js', '.jsx', '.sass', '.scss', '.css', '.json'],
+    alias: { 'react-dom': '@hot-loader/react-dom' }
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.BannerPlugin('Copyright Evolve Team Hackaton.'),
@@ -158,6 +165,6 @@ module.exports = {
     historyApiFallback: true,
     hot: true,
     open: true,
-    port: 80
+    port: isProduction ? 80 : 3000
   }
 };
