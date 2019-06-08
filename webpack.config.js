@@ -13,7 +13,7 @@ const isDevelopment = argv.development;
 const isProduction = argv.production;
 
 let entryFile = {
-  app: path.resolve(__dirname, './src/index.js')
+  bundle: path.resolve(__dirname, './src/index.js')
 };
 
 module.exports = {
@@ -113,7 +113,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new webpack.BannerPlugin('Copyright Evolve Team Hackaton.'),
+    new webpack.BannerPlugin('Copyrite "Alexsandrrh"'),
     new webpack.WatchIgnorePlugin([path.resolve(__dirname, 'node_modules')]),
     new HtmlWebpackPlugin({
       filename: 'index.html',
