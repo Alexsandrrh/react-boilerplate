@@ -30,7 +30,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        loaders: ['react-hot-loader/webpack', 'babel-loader']
+        loaders: ['babel-loader']
       },
       {
         test: /\.svg$/,
@@ -50,9 +50,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               plugins: [
-                autoprefixer({
-                  browsers: ['ie >= 8', 'last 15 version', '>1%']
-                })
+                autoprefixer()
               ],
               sourceMap: true
             }
@@ -108,8 +106,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.sass', '.scss', '.css', '.json'],
-    alias: { 'react-dom': '@hot-loader/react-dom' }
+    extensions: ['.js', '.jsx', '.sass', '.scss', '.css', '.json']
   },
   plugins: [
     new CleanWebpackPlugin(),
