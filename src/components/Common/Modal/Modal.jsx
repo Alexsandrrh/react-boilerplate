@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
+import PropTypes from 'prop-types';
 import './Modal.scss';
 
 class Modal extends Component {
@@ -9,18 +10,22 @@ class Modal extends Component {
     this.state = {};
   }
 
+  closeModalWindow(e) {
+    e.preventDefault();
+    const { onClose } = this.props;
+
+    if (onClose) {
+      onClose();
+    }
+  }
+
   render() {
-    const { isOpen, className } = this.props;
+    const { isOpen, className, children } = this.props;
 
     const modalComponent = (
-      <div className={'modal -' + className}>
-        <div
-          className='modal__background'
-          onClick={e => {
-            this.closeModalWindow(e);
-          }}
-        />
-        <div className='modal__body'>{this.props.children}</div>
+      <div className={`modal - ${className}`}>
+        <div className='modal__background' onClick={e => this.closeModalWindow(e)} />
+        <div className='modal__body'>{children}</div>
       </div>
     );
 
@@ -28,14 +33,13 @@ class Modal extends Component {
 
     return createPortal(componentPortal, document.getElementById('modal'));
   }
-
-  closeModalWindow(e) {
-    e.preventDefault();
-
-    if (this.props.onClose) {
-      this.props.onClose();
-    }
-  }
 }
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  className: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired
+};
 
 export default Modal;

@@ -1,4 +1,4 @@
-@media screen and (min-width: 320px){
+@media screen and (min-width: 320px) {
   .modal {
     position: fixed;
     top: 0;
@@ -9,7 +9,7 @@
   }
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .modal {
     display: flex;
     justify-content: center;
@@ -26,6 +26,7 @@
     &__background {
       position: absolute;
       background-color: rgba(0, 0, 0, 0.8);
+      cursor: pointer;
     }
 
     &__body {
