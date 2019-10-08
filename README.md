@@ -1,1 +1,1 @@
-React Boilerplate by "Alexsandrrh"
+# React Boilerplate

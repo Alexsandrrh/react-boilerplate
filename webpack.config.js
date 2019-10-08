@@ -1,29 +1,25 @@
 const webpack = require('webpack');
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const SvgSpriteHtmlWebpackPlugin = require('svg-sprite-html-webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const autoprefixer = require('autoprefixer');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const merge = require('webpack-merge');
+const manifest = require('./manifest');
 
-const { argv } = require('yargs');
-const isDevelopment = argv.development;
-const isProduction = argv.production;
+// Configs
+const dev = require('./webpack/webpack.development');
+const prod = require('./webpack/webpack.production');
 
-let entryFile = {
-  bundle: path.resolve(__dirname, './src/index.js')
-};
+const { NODE_ENV } = process.env;
 
-module.exports = {
-  mode: isDevelopment ? 'development' : 'production',
-  devtool: 'eval',
-  entry: entryFile,
-  performance: { hints: false },
+const config = {
+  mode: NODE_ENV,
+  entry: {
+    bundle: path.resolve(__dirname, './src/index.js')
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'js/[name]-[hash].js'
+    filename: 'assets/js/[name].[hash].js',
+    chunkFilename: 'assets/js/[name].[hash].js'
   },
   module: {
     rules: [
@@ -31,65 +27,6 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         loaders: ['babel-loader']
-      },
-      {
-        test: /\.svg$/,
-        exclude: /node_modules/,
-        use: SvgSpriteHtmlWebpackPlugin.getLoader()
-      },
-      {
-        test: /\.(scss|sass|css)$/,
-        exclude: /\node_modules/,
-        use: [
-          {
-            loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
-            options: { sourceMap: true }
-          },
-          { loader: 'css-loader', options: { sourceMap: true } },
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: [
-                autoprefixer()
-              ],
-              sourceMap: true
-            }
-          },
-          { loader: 'sass-loader', options: { sourceMap: true } }
-        ]
-      },
-      {
-        test: /\.(jpeg|jpg|png|gif)$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[hash].[ext]',
-              outputPath: './images',
-              useRelativePath: true
-            }
-          },
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              mozjpeg: {
-                progressive: true,
-                quality: 65
-              },
-              optipng: {
-                enabled: false
-              },
-              pngquant: {
-                quality: '65-90',
-                speed: 4
-              },
-              gifsicle: {
-                interlaced: false
-              }
-            }
-          }
-        ]
       },
       {
         test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
@@ -110,54 +47,34 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new webpack.BannerPlugin('Copyrite "Alexsandrrh"'),
+    new webpack.ProgressPlugin(),
+    new webpack.BannerPlugin(`Copyright | ${manifest.name}`),
     new webpack.WatchIgnorePlugin([path.resolve(__dirname, 'node_modules')]),
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './src/assets/index.html',
-      minify: isProduction
-        ? {
-            html5: true,
-            collapseWhitespace: true,
-            minifyCSS: true,
-            minifyJS: true,
-            minifyURLs: false,
-            removeAttributeQuotes: true,
-            removeComments: true,
-            removeEmptyAttributes: true,
-            removeOptionalTags: true,
-            removeRedundantAttributes: true,
-            removeScriptTypeAttributes: true,
-            removeStyleLinkTypeAttributese: true,
-            useShortDoctype: true
-          }
-        : {}
+    new webpack.DefinePlugin({
+      IS_DEV: JSON.stringify(NODE_ENV === 'development'),
+      IS_PROD: JSON.stringify(NODE_ENV === 'production')
     }),
-    new SvgSpriteHtmlWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: 'css/main-[hash].css',
-      chunkFilename: '[id]-[hash].css'
+    new ManifestPlugin({
+      seed: manifest
     })
   ],
-  optimization: isProduction
-    ? {
-        minimize: true,
-        minimizer: [
-          new TerserPlugin({
-            sourceMap: false,
-            cache: true,
-            parallel: true
-          }),
-          new OptimizeCSSAssetsPlugin()
-        ]
+  optimization: {
+    splitChunks: {
+      name: true,
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          test: /node_modules/,
+          chunks: 'all',
+          enforce: true
+        }
       }
-    : {},
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    historyApiFallback: true,
-    hot: true,
-    open: true,
-    port: isProduction ? 80 : 3000
+    }
   }
 };
+
+if (NODE_ENV === 'production') {
+  module.exports = merge(config, prod);
+} else if (NODE_ENV === 'development') {
+  module.exports = merge(config, dev);
+}

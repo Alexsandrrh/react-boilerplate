@@ -4,10 +4,12 @@
     "es6": true,
     "node": true
   },
-  "extends": ["standard", "prettier"],
+  "extends": ["airbnb", "prettier"],
   "globals": {
     "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
+    "SharedArrayBuffer": "readonly",
+    "IS_DEV": true,
+    "IS_PROD": true
   },
   "parserOptions": {
     "ecmaFeatures": {
@@ -18,11 +20,8 @@
   },
   "plugins": ["react", "prettier"],
   "rules": {
-    "camelcase": "error",
-    "no-console": "error",
-    "no-alert": "error",
-    "no-debugger": "error",
-    "no-unused-vars": "off",
-    "prettier/prettier": ["error"]
+    "prettier/prettier": ["error"],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "no-console": "error"
   }
 }
